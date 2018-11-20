@@ -242,6 +242,13 @@ public class Managed {
         return this;
       }
 
+      public Group first(Enum toField, Enum field) {
+        obj.add(toField, DBObjectBuilder.start()
+                .add(Operation.$FIRST, groupFieldName(field))
+                .get());
+        return this;
+      }
+
       public DBObjectExt get() {
         DBObjectExt result = obj.get();
         if (!result.asDBObject()
@@ -277,6 +284,11 @@ public class Managed {
 
     public QueryBuilder(Class<T> clazz) {
       this.clazz = clazz;
+    }
+
+    public QueryBuilder<T> prepared(DBObject obj) {
+      searchBuilder = SearchBuilder.fromDBObject(obj);
+      return this;
     }
 
     // Limit fields
@@ -370,6 +382,14 @@ public class Managed {
       for (Enum val : values)
         vals.add(val.name());
       return in(field, vals);
+    }
+
+    public QueryBuilder<T> in(Enum[] field, Enum[] values) {
+      List<String> vals = new ArrayList<String>();
+      for (Enum val : values)
+        vals.add(val.name());
+      searchBuilder.in(field, vals);
+      return this;
     }
 
     public QueryBuilder<T> in(Enum field, Collection<String> values) {
